@@ -42,5 +42,8 @@ def test_parse_bmi_matrix():
 
 @pytest.mark.parametrize("bmi,expected", [(11, ("Underweight", "Malnutrition risk")), (27, ("Overweight", "Enhanced risk"))])
 def test_bmi_classify(bmi, expected):
+    """
+    Parametized test to check the output against multiple inputs
+    """
     output = bmi_classify(bmi, format="np")
     assert expected == output

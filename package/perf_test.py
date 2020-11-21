@@ -1,5 +1,6 @@
 """
 Load data from the dicts and then perform bmi checking for each entry.
+Runs the functions using native and numpy methods
 """
 import sys
 import time

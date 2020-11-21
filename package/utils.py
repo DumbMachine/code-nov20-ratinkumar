@@ -1,5 +1,5 @@
 """
-Utilities used by other methods
+Utilities and single function solvers
 """
 import os
 import json
@@ -13,18 +13,20 @@ datadir = os.path.join(basedir, "data", "default.json")
 
 
 def parse_bmi_native(data):
-    """Extract BMi information from the each individual's information
+    """Extract BMI information from the each individual's information using python loops
 
     Args:
         person_dict (dict): Dict containing the :weight and :gender and :height
     """
     obese_itr = []
+    required_keys = ["Gender", "HeightCm", "WeightKg"]
+
     for itr, person_dict in enumerate(data):
-        required_keys = ["Gender", "HeightCm", "WeightKg"]
+        # data validation
         assert set(required_keys).issubset(
             set(person_dict.keys())
         ), "Invalid format for person_dict"
-        # convert the height to m2
+
         weight, height = person_dict["WeightKg"], person_dict["HeightCm"] / 100
         bmi = weight / (height ** 2)
         person_dict.update({"bmi": bmi})
@@ -38,7 +40,7 @@ def parse_bmi_native(data):
 
 
 def parse_bmi_matrix(data):
-    """Extract BMi information from the each individual's information
+    """Extract BMI information from the each individual's information using numpy operations
 
     Args:
         person_dict (dict): Dict containing the :weight and :gender and :height
@@ -52,6 +54,12 @@ def parse_bmi_matrix(data):
     return data, obese_len
 
 def bmi_classify(bmi, format="json"):
+    """Helper function to get "BMI Category" and "Health Risk" from the bmi number
+
+    Args:
+        bmi (int): BMI of the concerned person
+        format (str, optional): Json when for `native loop` method and anything else for `numpy` method. Defaults to "json".
+    """
     if bmi < 18.4:
         remarks = ("Underweight", "Malnutrition risk")
     elif bmi >= 18.5 and bmi < 24.9:
@@ -75,6 +83,9 @@ def bmi_classify(bmi, format="json"):
 
 
 def load_data(location=datadir, format="json", length=0):
+    """
+    Helper function to load data, or modify the given data if required.
+    """
     data = json.load(open(location, "r"))
     if length != 0:
         r_indexes = [random.randint(0, len(data) - 1) for _ in range(length)]

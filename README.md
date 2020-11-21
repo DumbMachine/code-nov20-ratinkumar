@@ -22,6 +22,9 @@ This document will detail the choices and the solution
     - [X] The Python package installable via the setup.py or importing by copying the files.
     - [X] I have also added a automated pipeline for hosting the service ( from the `server` folder directly on the heroku server ) with the `Procfile`.
     - [X] Tests? All the functions used in this program are tested for ( find the tests in the `tests` folder ), using `pytest`.
+    ```bash
+    ❯ bash run_test.sh
+    ```
     - [X] To run the code as a serverless `AWS Lambda Function`, one would only have to zip the `utils.py` file and upload it to the `AWS console`.
 
 # Getting the BMI
@@ -39,7 +42,23 @@ To put the speed difference in perspective look that the below screenshot:
 ![image](https://user-images.githubusercontent.com/23381512/99855001-e49f9e00-2bab-11eb-92a0-07550d927d95.png)
 ![image](https://user-images.githubusercontent.com/23381512/99855039-f6814100-2bab-11eb-835d-89166856e801.png)
 Though the performance benefits gained from the a arithmetic ops boost is downsided by the requirement that each row also has to have the
-"BMI Category" and "Health Risk" computed as well. But even then for most uses cases, where the input data is large (>10K records) use of numpy is more faster and scalble.
+"BMI Category" and "Health Risk" computed as well. But even then for most uses cases, where the input data is large (>100K records) use of numpy is more faster and scalble.
+As expected: the numpy method surpases the native loops method when the input size is large:
+```bash
+❯ bash run_bench.sh
+Time taken by native python loop:  1.8524301052093506
+Time taken by numpy matrix:  1.5414109230041504
+Numpy is faster than native loops by:  1.2017756443551313
+```
+As expected: the numpy method surpases the native loops method when the input size is small:
+```bash
+# Here numpy is much slower
+❯ python perf_test.py 1000
+Time taken by native python loop:  0.0016388893127441406
+Time taken by numpy matrix:  0.02517867088317871
+Numpy is faster than native loops by:  0.06509038226632705
+```
+The slowness is due to the added overhead of traversing each element of the numpy array (for getting the BMI Category and Health risk) when the total elements are itself low.
 
 # How to use the code?
 For on-premise environments, two options are available as the scalable options to deploy this "product" that calculates BMI.
@@ -49,5 +68,5 @@ This would be usefull when thinking of this product as a SAS product. Providing 
 2. Python-Package:
 Call the function directly from another service by importing the processor functions. This would make sense in a in-house setting.
 
-
-Since this program solves a single problem and it can easily be hosted in serverless manner as well. Making use of AWS Lambda functions or Cloud functions from the GCP are a good possible solution to the problem here.
+For cloud-like environment:
+Since this program solves a single problem it can easily be hosted in serverless manner. Making use of an AWS Lambda function or Cloud function from the GCP are a good possible solutions
